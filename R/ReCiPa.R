@@ -1,20 +1,6 @@
 ReCiPa <-
 function(file, new_name, overlap){
 
-###########################################################################################################
-##
-## MAIN FUNCTION "ReCiPa"
-## THREE ARGUMENTS:
-## 	file	: database full name (gmt file or any txt file)
-##		  1st column		: name of the pathway
-##		  2nd column		: url of the pathway
-##		  3rd to n-th columns	: genes on that pathway 	
-## 	new_name: new file name (will be augmented at the end)
-## 	overlap	: maximum overlap allowed (0.50, 0.75, 0.80, etc.; 1.00 will return the old file)
-## AND CONVERTING INTO A MATRIX
-## 	no_col 	: maximum number of columns in database
-##
-
 no_col	<- max(count.fields(file, sep = "\t"))
 dtbse	<- read.table(file, header=FALSE, sep="\t", fill=TRUE, col.names=1:no_col)
 dtbse	<- as.matrix(dtbse)
@@ -134,9 +120,10 @@ while(length(arr) > 0){
 				var1 <- c(u[i], wm2[aux.v,1])
 				n.nam <- dtbse[var1,1]
 				for(j in 2:length(n.nam)){
-					a3 <- setdiff(unlist(strsplit(n.nam[j],"_")),unlist(strsplit(n.nam[1],"_")))
-					if(length(a3)==0) newpath <- paste(n.nam[1],"PWAY",sep="_+_")
-					else newpath <- paste(n.nam[1],paste(a3, collapse="_-_"),sep="_+_")
+					a3 <- setdiff(unlist(strsplit(n.nam[j],"_+_",fixed=TRUE)),unlist(strsplit(n.nam[1],"_+_",fixed=TRUE)))
+					if(length(a3)==0) { newpath <- n.nam[1]
+					} else {newpath <- paste(n.nam[1],paste(a3, collapse="_+_"),sep="_+_")}
+					#newpath <- paste(n.nam[1],n.nam[j],sep="_+_")
 					n.nam[1] <- newpath
 				} 
 			row2del <- unique(c(row2del,var1[-1]))
@@ -165,9 +152,10 @@ while(length(arr) > 0){
 				var1 <- c(u[i], wm2[aux.v,2])
 				var2 <- wm2[aux.v[which(wm2[aux.v,4] == max(wm2[aux.v,4]))],1:2]
 				n.nam <- dtbse[var2,1]
-				a3 <- setdiff(unlist(strsplit(n.nam[1],"_")),unlist(strsplit(n.nam[2],"_")))
-				if(length(a3)==0) newpath <- paste(n.nam[2],"PWAY",sep="_+_")
-				else newpath <- paste(n.nam[2],paste(a3, collapse="_-_"),sep="_+_")
+				a3 <- setdiff(unlist(strsplit(n.nam[1],"_+_",fixed=TRUE)),unlist(strsplit(n.nam[2],"_+_",fixed=TRUE)))
+				if(length(a3)==0){ newpath <- n.nam[2] 
+				} else { newpath <- paste(n.nam[2],paste(a3, collapse="_+_"),sep="_+_")}
+				#newpath <- paste(n.nam[2],n.nam[1],sep="_+_")
 				n.nam[1] <- newpath	
 				row2del <- unique(c(row2del,var1[var1%in%var2][1]))
 				dtbse[var2[2],1] <- n.nam[1] 
@@ -188,9 +176,10 @@ while(length(arr) > 0){
 	if(Lu3 > 0){
 		for(i in 1:Lu3){
 			n.nam <- dtbse[wm2[i,1:2],1]
-			a3 <- setdiff(unlist(strsplit(n.nam[1],"_")),unlist(strsplit(n.nam[2],"_")))
-			if(length(a3)==0) newpath <- paste(n.nam[2],"PWAY",sep="_+_")
-			else newpath <- paste(n.nam[2],paste(a3, collapse="_-_"),sep="_+_")
+			a3 <- setdiff(unlist(strsplit(n.nam[1],"_+_",fixed=TRUE)),unlist(strsplit(n.nam[2],"_+_",fixed=TRUE)))
+			if(length(a3)==0){ newpath <- n.nam[2]
+			} else { newpath <- paste(n.nam[2],paste(a3, collapse="_+_"),sep="_+_") }
+			#newpath <- paste(n.nam[2],n.nam[1],sep="_+_")
 			n.nam[1] <- newpath	
 			row2del <- unique(c(row2del, wm2[i,1]))
 			dtbse[wm2[i,2],1] <- n.nam[1]
@@ -218,10 +207,11 @@ while(length(arr) > 0){
 				var2 <- wm3[aux.v[which(wm3[aux.v,5] == max(wm3[aux.v,5]))],1:2]
 				if(!is.null(dim(var2))) var2 <- var2[1,]
 				nm4 <- dtbse[var2,1]
-				a3 <- setdiff(unlist(strsplit(nm4[1],"_")),unlist(strsplit(nm4[2],"_")))
-				if(length(a3)==0) newpath <- paste(nm4[2],"PWAY",sep="_+_")
-				else newpath <- paste(nm4[2],paste(a3, collapse="_-_"),sep="_+_")
-				newurl <- dtbse[wm3[i,2],2]
+				a3 <- setdiff(unlist(strsplit(nm4[1],"_+_",fixed=TRUE)),unlist(strsplit(nm4[2],"_+_",fixed=TRUE)))
+				if(length(a3)==0) { newpath <- nm4[2]
+				} else { newpath <- paste(nm4[2],paste(a3, collapse="_+_"),sep="_+_")}
+				#newpath <- paste(nm4[2],nm4[1],sep="_+_")
+				newurl <- dtbse[var2[2],2]
 				l1 <- dtbse[var2[1],sgc:(Ng[var2[1]]+2)]
 				l2 <- dtbse[var2[2],sgc:(Ng[var2[2]]+2)]
 				newgenes <- unique(c(l1,l2))
@@ -252,7 +242,7 @@ while(length(arr) > 0){
 	
 	################################################################################
 	##
-	## 5) % < 1 AND (PATHWAY 'j' IS REPEATED in wm1 OR NO REPETITIONS)
+	## 5) % < 1 AND (PATHWAY 'j' IS REPEATED in wm3 OR NO REPETITIONS)
 	##
 
 	if(length(u2[u2 %in% row2del]) > 0)
@@ -266,9 +256,10 @@ while(length(arr) > 0){
 	if(Lu4 > 0){
 		for(i in 1:length(wm3[,1])){
 			nm4 <- dtbse[wm3[i,1:2],1]
-			a3 <- setdiff(unlist(strsplit(nm4[1],"_")),unlist(strsplit(nm4[2],"_")))
-			if(length(a3)==0) newpath <- paste(nm4[2],"PWAY",sep="_+_")
-			else newpath <- paste(nm4[2],paste(a3, collapse="_-_"),sep="_+_")
+			a3 <- setdiff(unlist(strsplit(nm4[1],"_+_",fixed=TRUE)),unlist(strsplit(nm4[2],"_+_",fixed=TRUE)))
+			if(length(a3)==0) { newpath <- nm4[2]
+			} else {newpath <- paste(nm4[2],paste(a3, collapse="_+_"),sep="_+_")}
+			#newpath <- paste(nm4[2],nm4[1],sep="_+_")
 			newurl <- dtbse[wm3[i,2],2]
 			l1 <- dtbse[wm3[i,1],sgc:(wm3[i,3]+2)]
 			l2 <- dtbse[wm3[i,2],sgc:(wm3[i,4]+2)]
@@ -297,48 +288,70 @@ while(length(arr) > 0){
 		dtbse <- rbind(dtbse, newmat)
 	}
 
-	row2del
 	dtbse <- dtbse[-row2del,]
 
-
 	if(is.null(dim(dtbse))){ cat("You got a single megapathway!. Try with a greater overlap\n") 
-				 arr <- NULL }
-	else{	NoP <- length(dtbse[,1])
-		nocg_mat <- matrix(NA, NoP, NoP)
-		for(i in 1:NoP){
-			for(j in 1:NoP){
-				if(length(which(dtbse[i,]=="")) > 0)
-					a <- dtbse[i,sgc:length(dtbse[i,-c(which(dtbse[i,]==""))])]
-				else a <- dtbse[i,sgc:length(dtbse[i,])]
-				if(length(which(dtbse[j,]=="")) > 0)
-					b <- dtbse[j,sgc:length(dtbse[j,-c(which(dtbse[j,]==""))])]
-				else b <- dtbse[j,sgc:length(dtbse[j,])]
-				nocg <- length(a[a %in% b])
-				nocg_mat[i,j] <- nocg
+				 arr <- NULL
+	} else{	NoP <- length(dtbse[,1])
+			nocg_mat <- matrix(NA, NoP, NoP)
+			for(i in 1:NoP){
+				for(j in 1:NoP){
+					if(length(which(dtbse[i,]=="")) > 0)
+						a <- dtbse[i,sgc:length(dtbse[i,-c(which(dtbse[i,]==""))])]
+					else a <- dtbse[i,sgc:length(dtbse[i,])]
+					if(length(which(dtbse[j,]=="")) > 0)
+						b <- dtbse[j,sgc:length(dtbse[j,-c(which(dtbse[j,]==""))])]
+					else b <- dtbse[j,sgc:length(dtbse[j,])]
+					nocg <- length(a[a %in% b])
+					nocg_mat[i,j] <- nocg
+				}
 			}
+			Ng <- diag(nocg_mat)
+			diag(nocg_mat) <- 0
+			perc_mat <- nocg_mat / Ng
+			arr <- which(perc_mat > coff, arr.ind=TRUE)
+			maxNg <- max(Ng)
+			k <- k + 1
+			cat(k, "\n")
 		}
-		Ng <- diag(nocg_mat)
-		diag(nocg_mat) <- 0
-		perc_mat <- nocg_mat / Ng
-		arr <- which(perc_mat > coff, arr.ind=TRUE)
-		maxNg <- max(Ng)
-		k <- k + 1
-		cat(k, "\n")
-	}
 }
 
 ########################################################################################
 ##
 ## END OF BIG LOOP
-## PREPARING THE NAME OF THE NEW FILE: 
+## GENERATING THE FILES:
+##	1) NEW DATABASE
 ## 	new_name + max_overlap + loops + # of pathways + max # of genes in a pathway
 ##
+##	2) LIST OF SUPERPATHWAYS
+##	
+##
 
-if(is.null(dim(dtbse))){ cat("No output file is created\n") }
-else{ nam0 <- paste(new_name,coff,k,NoP,maxNg,sep="_")
+if(is.null(dim(dtbse))){ cat("No output files are created\n")
+} else{ ind <- 1
+	plus <- c()
+	newname <- c()
+	for(i in 1:length(dtbse[,1])){
+		lp <- unlist(gregexpr("[+]",dtbse[,1][i]))
+		if(lp[1] != -1){ 
+			plus[i] <- length(lp) + 1 
+			nam2 <- paste("Superpathway",ind,coff,plus[i],sep="_")
+			newname[i] <- nam2
+			ind <- ind + 1
+		} else{ 
+				plus[i] <- 1 
+				newname[i] <- dtbse[,1][i]
+			}
+	}
+	
+	super <- cbind(newname,dtbse[,1])
+	dtbse[,1] <- newname
+	nam0 <- paste(new_name,coff,k,NoP,maxNg,sep="_")
 	nam1 <- paste(nam0,"txt",sep=".")
-	for(i in 1:length(dtbse[,1]))
+	for(i in 1:length(dtbse[,1])){
 		write(dtbse[i,1:(Ng[i]+2)], nam1, sep="\t", ncolumns=(Ng[i]+2),append=TRUE)
+	}
+	write(t(subset(super, grepl("^Su", newname))), paste("Superpathways",nam1,sep="_"), sep="\t", ncolumns=2)
 	cat("DONE!","\n")
     }
 }

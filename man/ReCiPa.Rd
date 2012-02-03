@@ -12,8 +12,8 @@ Pathways in a database could have many redundancies among them. This package all
 \tabular{ll}{
 Package: \tab ReCiPa\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2012-01-26\cr
+Version: \tab 2.0\cr
+Date: \tab 2012-02-03\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 }
