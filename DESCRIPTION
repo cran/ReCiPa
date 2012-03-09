@@ -1,8 +1,8 @@
 Package: ReCiPa
 Type: Package
 Title: Redundancy Control in Pathways databases
-Version: 2.0
-Date: 2012-02-03
+Version: 2.1
+Date: 2012-03-09
 Author: Juan C. Vivar
 Maintainer: Juan C. Vivar <jvivar@nccu.edu>
 Description: Pathways in a database could have many redundancies among
@@ -10,6 +10,6 @@ Description: Pathways in a database could have many redundancies among
         the proportion of these redundancies.
 License: GPL-2
 LazyLoad: yes
-Packaged: 2012-02-03 20:10:59 UTC; jcvivar
+Packaged: 2012-03-09 16:45:19 UTC; jcvivar
 Repository: CRAN
-Date/Publication: 2012-02-04 08:39:44
+Date/Publication: 2012-03-10 06:24:09
