@@ -64,10 +64,8 @@ while(length(arr) > 0){
 	## wm1 : matrix where each row has the indexes of pathways 'i' and 'j', 
 	## 		 the number of genes 'i' and 'j', % and number of common genes
 	##
-
-	l1	<- dtbse[arr[,1],1]
-	l2	<- dtbse[arr[,2],1]
 	
+	arr 	<- check.null.dim(arr)
 	wm1 <- cbind(arr,Ng[arr[,1]],Ng[arr[,2]],perc_mat[arr], nocg_mat[arr])
 
 	################################################################################
@@ -172,6 +170,27 @@ while(length(arr) > 0){
 	wm2 <- check.null.dim(wm2)
 	u <- unique(wm2[,1])
 	Lu3 <- length(u)
+
+	tt <- sum(wm2[,2] %in% wm2[,1])
+	if(tt != 0){
+		m2 <- wm2
+		newwm2 <- matrix(rep(0,6*Lu3),Lu3,6)
+		i <- 1
+		newwm2[i,] <- m2[i,]
+		j <- which(m2[,1] == newwm2[i,2])
+		while(i < Lu3){
+			i <- i + 1
+			if(length(j) > 0){
+				newwm2[i,] <- m2[j,]
+				m2[j,] <- m2[i,]
+				m2[i,] <- rep(NA,6)
+			} else { newwm2[i,] <- m2[i,] }
+			j <- which(m2[,1] == newwm2[i,2])
+		}
+		newwm2[which(!is.na(m2[,1])),] <- m2[which(!is.na(m2[,1])),]
+		wm2 <- newwm2 
+	}
+	
 	if(Lu3 > 0){
 		for(i in 1:Lu3){
 			n.nam <- dtbse[wm2[i,1:2],1]
@@ -180,7 +199,7 @@ while(length(arr) > 0){
 			} else { newpath <- paste(n.nam[2],paste(a3, collapse="_+_"),sep="_+_") }
 			n.nam[1] <- newpath	
 			row2del <- unique(c(row2del, wm2[i,1]))
-			dtbse[wm2[i,2],1] <- n.nam[1]
+			dtbse[wm2[i,1:2],1] <- n.nam[1]
 		}
 	}
 
@@ -314,7 +333,7 @@ while(length(arr) > 0){
 		}
 }
 
-#####################################################################################################
+########################################################################################
 ##
 ## END OF BIG LOOP
 ## GENERATING THE FILES:
